@@ -1,4 +1,5 @@
 import pandas as pd
+from collections import Counter
 
 def main():
     ''' Part 1 - Compare distance '''
@@ -12,10 +13,8 @@ def main():
     print('Part 1:', sum(result))
 
     ''' Part 2 - Similarity score '''
-    result = []
-    for i in range(len(col_1)):
-        mult = col_2.count(col_1[i])
-        result.append(col_1[i] * mult)
+    counts = Counter(col_2)
+    result = [col_1[i] * counts[col_1[i]] for i in range(len(col_1))]
 
     print('Part 2:', sum(result))
 

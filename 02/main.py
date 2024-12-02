@@ -19,7 +19,7 @@ def main():
 
     print(safe_reports)
 
-def ordered_and_unique(l: list) -> bool:
+def ordered_and_unique(l: pd.Series) -> bool:
     l = [int(x) for x in l if x is not None]
 
     ordered = l == sorted(l) or l == sorted(l, reverse=True)
@@ -27,7 +27,7 @@ def ordered_and_unique(l: list) -> bool:
 
     return ordered and unique
 
-def spaced_within(l: list, n: int) -> bool:
+def spaced_within(l: pd.Series, n: int) -> bool:
     l = [int(x) for x in l if x is not None]
 
     for i in range(1, len(l)):

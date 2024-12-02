@@ -11,17 +11,29 @@ def main():
             data[i].append(None)
 
     df = pd.DataFrame(data)
+    safe_reports = 0
 
     for i, r in df.iterrows():
-        print(is_ordered_and_unique(r))
+        if ordered_and_unique(r) and spaced_within(r, 3):
+            safe_reports += 1
 
-def is_ordered_and_unique(l: list) -> bool:
+    print(safe_reports)
+
+def ordered_and_unique(l: list) -> bool:
     l = [int(x) for x in l if x is not None]
 
     ordered = l == sorted(l) or l == sorted(l, reverse=True)
     unique = len(l) == len(set(l))
 
     return ordered and unique
+
+def spaced_within(l: list, n: int) -> bool:
+    l = [int(x) for x in l if x is not None]
+
+    for i in range(1, len(l)):
+        if abs(l[i] - l[i - 1]) > n:
+            return False
+    return True
 
 if __name__ == '__main__':
     main()

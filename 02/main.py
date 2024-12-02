@@ -23,8 +23,5 @@ def is_ordered_and_unique(l: list) -> bool:
 
     return ordered and unique
 
-def remove_item(l: list, s: str) -> list:
-    return list(filter(lambda x: x != s, l))
-
 if __name__ == '__main__':
     main()

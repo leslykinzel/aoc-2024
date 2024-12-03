@@ -22,6 +22,7 @@ def main():
     print('Part 1:', safe_reports)
 
     ''' Part 2 - Problem Dampener '''
+
     p2_safe_reports = 0
 
     for i, r in df.iterrows():

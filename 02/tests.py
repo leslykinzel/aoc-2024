@@ -1,7 +1,7 @@
 import unittest
 from main import ordered_and_unique, spaced_within
 
-class TestSequenceValidation(unittest.TestCase):
+class TestDay2Functions(unittest.TestCase):
 
     def test_order_ascending(self):
         self.assertEqual(ordered_and_unique([1, 2, 3, 4, 5]), True)

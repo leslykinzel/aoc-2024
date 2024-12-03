@@ -10,6 +10,8 @@ def main():
         while len(data[i]) < longest_line:
             data[i].append(None)
 
+    ''' Part 1 - Safe Reports '''
+
     df = pd.DataFrame(data)
     safe_reports = 0
 
@@ -17,7 +19,20 @@ def main():
         if ordered_and_unique(r) and spaced_within(r, 3):
             safe_reports += 1
 
-    print(safe_reports)
+    print('Part 1:', safe_reports)
+
+    ''' Part 2 - Problem Dampener '''
+    p2_safe_reports = 0
+
+    for i, r in df.iterrows():
+        r_vals = r.tolist()
+        for n in range(len(r_vals)):
+            r_combo = [val for j, val in enumerate(r_vals) if j != n]
+            if ordered_and_unique(r_combo) and spaced_within(r_combo, 3):
+                p2_safe_reports += 1
+                break
+
+    print('Part 2:', p2_safe_reports)
 
 def ordered_and_unique(l: pd.Series) -> bool:
     l = [int(x) for x in l if x is not None]

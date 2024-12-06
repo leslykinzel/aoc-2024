@@ -10,17 +10,19 @@ def main():
     valid_jobs = ps.get_valid_jobs()
     invalid_jobs = ps.get_invalid_jobs()
 
+    ''' Part 1 - Find sum of each middle value in valid lists. '''
+
     part1 = []
     for job in valid_jobs:
         part1.append(job[len(job)//2])
 
     print('Part 1:', sum(part1))
 
+    ''' Part 2 - Sort invalid lists, and find sum of each middle value. '''
+
     part2 = []
     for job in invalid_jobs:
         s_job = ps.sort_job(job)
-        if ps.is_corrupted(s_job):
-            print('WTF', s_job)
         part2.append(s_job[len(s_job)//2])
 
     print("Part 2:", sum(part2))

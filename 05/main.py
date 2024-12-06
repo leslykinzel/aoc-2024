@@ -1,32 +1,68 @@
-from collections import defaultdict
 
 def main():
     with open('input.txt', 'r') as file:
         rules, jobs = file.read().strip().split('\n\n')
 
-    part1 = 0
-    part2 = 0
-
     rules = [tuple(map(int, l.split('|'))) for l in rules.splitlines()]
     jobs = [tuple(map(int, l.split(','))) for l in jobs.splitlines()]
 
-    ''' Part 1 - Sum middle values in correctly ordererd lists '''
+    ps = PrintSorter(jobs, rules)
+    valid_jobs = ps.get_valid_jobs()
+    invalid_jobs = ps.get_invalid_jobs()
 
-    invalid_ordering = defaultdict(bool)
-    for x, y in rules:
-        invalid_ordering[y,x] = True
+    part1 = []
+    for job in valid_jobs:
+        part1.append(job[len(job)//2])
 
-    def check_job(job):
-        for i in range(len(job)):
-            for j in range(i+1, len(job)):
-                if invalid_ordering[job[i], job[j]]:
-                    return 0
-        return job[len(job)//2]
+    print('Part 1:', sum(part1))
 
-    for job in jobs:
-        part1 += check_job(job)
+    part2 = []
+    for job in invalid_jobs:
+        s_job = ps.sort_job(job)
+        if ps.is_corrupted(s_job):
+            print('WTF', s_job)
+        part2.append(s_job[len(s_job)//2])
 
-    print('Part 1:', part1)
+    print("Part 2:", sum(part2))
+
+class PrintSorter:
+
+    def __init__(self, jobs: list[tuple[int]], rules: list[tuple[int]]):
+        self.jobs = jobs
+        self.rules = rules
+
+    def is_corrupted(self, job: list[int]) -> bool:
+        for x, y in self.rules:
+            if x in job and y in job:
+                if job.index(x) > job.index(y):
+                    return True
+        return False
+
+    def get_valid_jobs(self) -> list[list[int]]:
+        return [job for job in self.jobs if not self.is_corrupted(job)]
+
+    def get_invalid_jobs(self) -> list[list[int]]:
+        return [job for job in self.jobs if self.is_corrupted(job)]
+
+    def sort_job(self, job: list[int]) -> list[int]:
+        job_list = list(job)
+        swap = True
+        while swap:
+            swap = False
+            for x, y in self.rules:
+                if x in job_list and y in job_list:
+                    if job_list.index(x) > job_list.index(y):
+                        job_list = self.swap_elements(job_list, x, y)
+                        swap = True
+        return job_list
+
+    def swap_elements(self, job: list[int], x: int, y: int) -> list[int]:
+        job_list = list(job)
+        x_idx = job_list.index(x)
+        y_idx = job_list.index(y)
+        if x_idx > y_idx:
+            job_list[x_idx], job_list[y_idx] = job_list[y_idx], job_list[x_idx]
+        return job_list
 
 if __name__ == '__main__':
     main()

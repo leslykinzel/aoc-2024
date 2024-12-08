@@ -15,32 +15,26 @@ def main():
     # Init guard obj
     guard = Guard(initial_guard_pos, initial_guard_state)
 
-    in_map = True
-    while in_map:
+    ''' Part 1 - Count number of spaces visited by guard. '''
+
+    while True:
         rc_guard = guard.position
-        ch_guard = guard.direction
-        print('Facing:', ch_guard, 'Position:', rc_guard)
 
-        # Step
+        # Look ahead.
         rc_ahead = guard.next_position()
-
         if not is_within_bounds(path_map, rc_ahead):
             path_map[rc_guard[0], rc_guard[1]] = FOOTPRINT
-            print('Guard left the map.')
             break
 
         ch_ahead = path_map[rc_ahead[0], rc_ahead[1]]
-
-        # I'm not checking for infinite loops idc
         if ch_ahead == OBSTACLE:
             guard.turn_right()
 
+        # Move & leave footprint.
         path_map[rc_guard[0], rc_guard[1]] = FOOTPRINT
         guard.move_forward()
 
-    ''' Part 1 - Count number of spaces visited by guard. '''
-
-    print(np.count_nonzero(path_map == 'X'))
+    print('Part 1:', np.count_nonzero(path_map == 'X'))
 
 def find_guard(some_map: np.ndarray) -> tuple|None:
     for (row, col), val in np.ndenumerate(some_map):

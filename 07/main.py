@@ -11,6 +11,7 @@ def main():
 
     for final_num, factors in data.items():
         required_operators = len(factors)-1
+        print(final_num, factors)
 
 def eval(expression: str):
     pass

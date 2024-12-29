@@ -1,20 +1,19 @@
-from itertools import permutations
+'''
+190: 10 19
+3267: 81 40 27
+83: 17 5
+156: 15 6
+7290: 6 8 6 15
+161011: 16 10 13
+192: 17 8 14
+21037: 9 7 18 13
+292: 11 6 16 20
 
+Can the numbers on the left be added or multiplied to equal the number on the right?
+'''
 def main():
-
-    data = {}
-
-    with open('input.txt', 'r') as file:
-        for line in file:
-            lr = line.strip().split(':')
-            data[int(lr[0].strip())] = list(map(int, lr[1].strip().split()))
-
-    for final_num, factors in data.items():
-        required_operators = len(factors)-1
-        print(final_num, factors)
-
-def eval(expression: str):
     pass
+
 
 if __name__ == '__main__':
     main()

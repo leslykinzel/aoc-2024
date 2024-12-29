@@ -21,7 +21,9 @@ class GuardPatrolLoopException(Exception):
     def __init__(self, position: tuple[int, int], direction: Direction):
         self.position = position
         self.direction = direction
-        message = {f'Guard is stuck in a loop at position {position}, facing {direction.value}'}
+        message = (
+            f'Guard is stuck in a loop at position {position} facing {direction.value}'
+        )
         super().__init__(message)
 
 
@@ -85,7 +87,9 @@ class GuardMap:
         self.initial_map = deepcopy(self.map)
         self.initial_obstacles = deepcopy(self.obstacles)
 
-    def _process_map(self, data: str) -> tuple[list[list[str]], Guard, set[tuple[int, int]]]:
+    def _process_map(
+        self, data: str
+    ) -> tuple[list[list[str]], Guard, set[tuple[int, int]]]:
         processed_map = []
         obstacles = set()
         guard = None
@@ -100,7 +104,9 @@ class GuardMap:
 
             for x, cell in enumerate(row):
                 if cell in guard_symbols:
-                    guard = Guard(position=Position(x, y), direction=guard_symbols[cell])
+                    guard = Guard(
+                        position=Position(x, y), direction=guard_symbols[cell]
+                    )
                 elif cell == OBSTACLE:
                     obstacles.add((x, y))
 
@@ -110,19 +116,24 @@ class GuardMap:
         return processed_map, guard, obstacles
 
     def sim_guard_patrol(self):
-        # Starting position (as copy)
-        sim_guard = Guard(Position(*self.guard.position.to_tuple()), self.guard.direction)
+        # Simulate guard patrol on a copy of the initial guard
+        sim_guard = Guard(
+            Position(*self.guard.position.to_tuple()), self.guard.direction
+        )
         guard_positions = set()
 
         while sim_guard.position.is_within_bounds(self.width, self.height):
             if (sim_guard.direction, sim_guard.position.to_tuple()) in guard_positions:
-                raise GuardPatrolLoopException(sim_guard.position.to_tuple(), sim_guard.direction)
+                raise GuardPatrolLoopException(
+                    sim_guard.position.to_tuple(), sim_guard.direction
+                )
 
-            guard_positions.add((sim_guard.direction, sim_guard.position.to_tuple))
+            guard_positions.add((sim_guard.direction, sim_guard.position.to_tuple()))
 
+            # Check if there is an obstacle on the next position
             next_pos = sim_guard.position.next_position(sim_guard.direction)
             if next_pos.to_tuple() in self.obstacles:
-                sim_guard.turn_right
+                sim_guard.turn_right()
                 continue
 
             sim_guard.move(next_pos)
@@ -133,19 +144,19 @@ class GuardMap:
         self.obstacles.add(position)
         self.map[position[1]][position[0]] = OBSTACLE
 
-    def reset(self) -> None:
+    def reset(self):
         self.map = deepcopy(self.initial_map)
         self.obstacles = deepcopy(self.initial_obstacles)
 
     def __str__(self) -> str:
         return (
-            f'GuardMap({self.width}x{self.height},'
-            f'guard={self.guard},'
+            f'GuardMap({self.width}x{self.height}, '
+            f'guard={self.guard}, '
             f'obstacles={len(self.obstacles)})'
         )
 
 
-with open('example.txt', 'r') as f:
+with open('input.txt', 'r') as f:
     data = f.read()
 
 guard_map = GuardMap(data)
@@ -171,4 +182,3 @@ for pos in guard_positions:
     guard_map.reset()
 
 ic(f'Total loops detected: {loops_detected}')
-

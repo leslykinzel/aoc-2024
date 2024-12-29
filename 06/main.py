@@ -1,83 +1,174 @@
-import numpy as np
+from dataclasses import dataclass
+from copy import deepcopy
+from enum import Enum
+
+from icecream import ic
 
 OBSTACLE = '#'
 FOOTPRINT = 'X'
 
-def main():
-    with open('input.txt', 'r') as file:
-        data = np.array([list(line.strip()) for line in file.readlines()])
 
-    path_map = data.copy()
+class Direction(Enum):
 
-    initial_guard_pos = find_guard(path_map)
-    initial_guard_state = path_map[initial_guard_pos[0], initial_guard_pos[1]]
+    UP = '^'
+    DOWN = 'v'
+    LEFT = '<'
+    RIGHT = '>'
 
-    # Init guard obj
-    guard = Guard(initial_guard_pos, initial_guard_state)
 
-    ''' Part 1 - Count number of spaces visited by guard. '''
+class GuardPatrolLoopException(Exception):
 
-    while True:
-        rc_guard = guard.position
-
-        # Look ahead.
-        rc_ahead = guard.next_position()
-        if not is_within_bounds(path_map, rc_ahead):
-            path_map[rc_guard[0], rc_guard[1]] = FOOTPRINT
-            break
-
-        ch_ahead = path_map[rc_ahead[0], rc_ahead[1]]
-        if ch_ahead == OBSTACLE:
-            guard.turn_right()
-
-        # Move & leave footprint.
-        path_map[rc_guard[0], rc_guard[1]] = FOOTPRINT
-        guard.move_forward()
-
-    print('Part 1:', np.count_nonzero(path_map == 'X'))
-
-def find_guard(some_map: np.ndarray) -> tuple|None:
-    for (row, col), val in np.ndenumerate(some_map):
-        if val in ('^', '>', 'v', '<'):
-            return (row, col)
-    return None
-
-def is_within_bounds(path_map: np.ndarray, position: tuple) -> bool:
-    rows, cols = path_map.shape
-    row, col = position
-    return 0 <= row < rows and 0 <= col < cols
-
-class Guard:
-
-    def __init__(self, position: tuple, direction: str):
+    def __init__(self, position: tuple[int, int], direction: Direction):
         self.position = position
         self.direction = direction
+        message = {f'Guard is stuck in a loop at position {position}, facing {direction.value}'}
+        super().__init__(message)
 
-    def turn_right(self):
+
+@dataclass(frozen=True)
+class Position:
+
+    x: int
+    y: int
+
+    def to_tuple(self) -> tuple[int, int]:
+        return (self.x, self.y)
+
+    def next_position(self, direction: Direction) -> 'Position':
+        match direction:
+            case Direction.UP:
+                return Position(self.x, self.y - 1)
+            case Direction.DOWN:
+                return Position(self.x, self.y + 1)
+            case Direction.LEFT:
+                return Position(self.x - 1, self.y)
+            case Direction.RIGHT:
+                return Position(self.x + 1, self.y)
+
+    def is_within_bounds(self, width: int, height: int) -> bool:
+        return 0 <= self.x < width and 0 <= self.y < height
+
+    def __str__(self) -> str:
+        return f'({self.x}, {self.y})'
+
+
+@dataclass
+class Guard:
+
+    position: Position
+    direction: Direction
+
+    def turn_right(self) -> 'Guard':
         match self.direction:
-            case '^':
-                self.direction = '>'
-            case '>':
-                self.direction = 'v'
-            case 'v':
-                self.direction = '<'
-            case '<':
-                self.direction = '^'
+            case Direction.UP:
+                self.direction = Direction.RIGHT
+            case Direction.RIGHT:
+                self.direction = Direction.DOWN
+            case Direction.DOWN:
+                self.direction = Direction.LEFT
+            case Direction.LEFT:
+                self.direction = Direction.UP
+        return self
 
-    def next_position(self):
-        match self.direction:
-            case '^':
-                return (self.position[0]-1, self.position[1])
-            case '>':
-                return (self.position[0], self.position[1]+1)
-            case 'v':
-                return (self.position[0]+1, self.position[1])
-            case '<':
-                return (self.position[0], self.position[1]-1)
-
-    def move_forward(self):
-        self.position = self.next_position()
+    def move(self, new_position: Position) -> 'Guard':
+        self.position = new_position
+        return self
 
 
-if __name__ == '__main__':
-    main()
+class GuardMap:
+
+    def __init__(self, data: str):
+        self.map, self.guard, self.obstacles = self._process_map(data)
+        self.width = len(self.map[0]) if self.map else 0
+        self.height = len(self.map)
+
+        self.initial_map = deepcopy(self.map)
+        self.initial_obstacles = deepcopy(self.obstacles)
+
+    def _process_map(self, data: str) -> tuple[list[list[str]], Guard, set[tuple[int, int]]]:
+        processed_map = []
+        obstacles = set()
+        guard = None
+        guard_symbols = {d.value: d for d in Direction}
+
+        for y, line in enumerate(data.strip().split('\n')):
+            if not line.strip():
+                continue
+
+            row = list(line.strip())
+            processed_map.append(row)
+
+            for x, cell in enumerate(row):
+                if cell in guard_symbols:
+                    guard = Guard(position=Position(x, y), direction=guard_symbols[cell])
+                elif cell == OBSTACLE:
+                    obstacles.add((x, y))
+
+        if guard is None:
+            raise ValueError('No guard position (^,v,<,>) found in map')
+
+        return processed_map, guard, obstacles
+
+    def sim_guard_patrol(self):
+        # Starting position (as copy)
+        sim_guard = Guard(Position(*self.guard.position.to_tuple()), self.guard.direction)
+        guard_positions = set()
+
+        while sim_guard.position.is_within_bounds(self.width, self.height):
+            if (sim_guard.direction, sim_guard.position.to_tuple()) in guard_positions:
+                raise GuardPatrolLoopException(sim_guard.position.to_tuple(), sim_guard.direction)
+
+            guard_positions.add((sim_guard.direction, sim_guard.position.to_tuple))
+
+            next_pos = sim_guard.position.next_position(sim_guard.direction)
+            if next_pos.to_tuple() in self.obstacles:
+                sim_guard.turn_right
+                continue
+
+            sim_guard.move(next_pos)
+
+        return {pos for _, pos in guard_positions}
+
+    def add_obstacle(self, position: tuple[int, int]) -> None:
+        self.obstacles.add(position)
+        self.map[position[1]][position[0]] = OBSTACLE
+
+    def reset(self) -> None:
+        self.map = deepcopy(self.initial_map)
+        self.obstacles = deepcopy(self.initial_obstacles)
+
+    def __str__(self) -> str:
+        return (
+            f'GuardMap({self.width}x{self.height},'
+            f'guard={self.guard},'
+            f'obstacles={len(self.obstacles)})'
+        )
+
+
+with open('example.txt', 'r') as f:
+    data = f.read()
+
+guard_map = GuardMap(data)
+ic(str(guard_map))
+
+# Get initial guard patrol route positions (guaranteed to not contain a loop)
+guard_positions = guard_map.sim_guard_patrol()
+
+# Add obstacles on the guard patrol route until a loop is created/detected
+loops_detected = 0
+for pos in guard_positions:
+    # Ignore guard starting position
+    if pos == guard_map.guard.position.to_tuple():
+        continue
+
+    guard_map.add_obstacle(pos)
+
+    try:
+        guard_map.sim_guard_patrol()
+    except GuardPatrolLoopException:
+        loops_detected += 1
+
+    guard_map.reset()
+
+ic(f'Total loops detected: {loops_detected}')
+

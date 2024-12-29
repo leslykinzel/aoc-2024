@@ -1,21 +1,34 @@
 import itertools
 
 
+def left_to_right_eval(factors, operators):
+    ''' 
+        This challenge is so stupid...
+    '''
+    result = factors[0]
+
+    for i in range(len(operators)):
+        match operators[i]:
+            case '+':
+                result += factors[i + 1]
+            case '*':
+                result *= factors[i + 1]
+
+    return result
+
+
 def factors_can_make_target(factors: list, target:int) -> bool:
+    '''
+        If any permutation of operators can equal the target when 
+        evaluated left-to-right (ignoring operator precedence), 
+        return True.
+    '''
     operators = [ '+', '*' ]
     total_ops = len(factors) - 1
     op_combos = list(itertools.product(operators, repeat=total_ops))
 
-    for combo in op_combos:
-        expression_parts = [str(factors[0])]
-
-        for i in range(total_ops):
-            expression_parts.append(combo[i])
-            expression_parts.append(str(factors[i + 1]))
-
-        expression = ''.join(expression_parts)
-        if eval(expression) == target:
-            print(f'SUCCESS: {expression} == {target}')
+    for ops in op_combos:
+        if left_to_right_eval(factors, ops) == target:
             return True
 
     return False
@@ -26,7 +39,7 @@ def main():
     targets = []
     factors = []
 
-    with open('test.txt', 'r') as file:
+    with open('input.txt', 'r') as file:
         for line in file:
             line = line.strip()
 
@@ -35,17 +48,16 @@ def main():
             targets.append(int(target))
             factors.append(list(map(int, factor.split())))
 
-    print(targets)
-    print(factors)
-    yes = 0
+    part1 = 0
 
     for i in range(len(targets)):
         if factors_can_make_target(factors[i], targets[i]):
-            yes += 1
+            part1 += targets[i]
         else:
             continue
 
-    print(yes)
+    print('Part 1:', part1)
+
 
 if __name__ == '__main__':
     main()

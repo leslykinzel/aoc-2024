@@ -1,18 +1,27 @@
 import itertools
 
+def concat_ints(x: int, y: int) -> int:
+    return int(str(x) + str(y))
 
-def left_to_right_eval(factors, operators):
+def left_to_right_eval(factors: list[int], operators: list[str]) -> int:
     ''' 
         This challenge is so stupid...
     '''
     result = factors[0]
 
-    for i in range(len(operators)):
-        match operators[i]:
-            case '+':
-                result += factors[i + 1]
-            case '*':
-                result *= factors[i + 1]
+    i = 0
+
+    while i < len(operators):
+        if i + 1 < len(factors):
+            match operators[i]:
+                case '+':
+                    result += factors[i + 1]
+                case '*':
+                    result *= factors[i + 1]
+                case '||':
+                    factors[i] = concat_ints(factors[i], factors[i + 1])
+
+            i += 1
 
     return result
 
@@ -28,7 +37,7 @@ def factors_can_make_target(factors: list, target:int) -> bool:
     op_combos = list(itertools.product(operators, repeat=total_ops))
 
     for ops in op_combos:
-        if left_to_right_eval(factors, ops) == target:
+        if left_to_right_eval(factors, list(ops)) == target:
             return True
 
     return False
@@ -48,15 +57,15 @@ def main():
             targets.append(int(target))
             factors.append(list(map(int, factor.split())))
 
-    part1 = 0
+    sum_of_valid_targets = 0
 
     for i in range(len(targets)):
         if factors_can_make_target(factors[i], targets[i]):
-            part1 += targets[i]
+            sum_of_valid_targets += targets[i]
         else:
             continue
 
-    print('Part 1:', part1)
+    print('Part 1:', sum_of_valid_targets)
 
 
 if __name__ == '__main__':

@@ -48,8 +48,6 @@
     example.txt contains 14 antinodes.
 
 '''
-from dataclasses import dataclass
-import math
 
 def main():
 
@@ -67,7 +65,7 @@ def main():
             for idx_x in range(len(line)):
                 char = line[idx_x]
 
-                if char == "." or char == "\n":
+                if char == '.' or char == '\n':
                     continue
 
                 if char not in nodes.keys():
@@ -109,6 +107,47 @@ def main():
                 print()
 
     print('Part 1:', len(antinodes))
+
+    '''
+        Part 2: antinodes now go on forever at
+        regular intervals, instead of just the
+        ends of a pair of antennas.
+
+        T....#....
+        ...T......
+        .T....#...
+        .........#
+        ..#.......
+        ..........
+        ...#......
+        ..........
+        ....#.....
+        ..........
+    '''
+
+    antinode_rays = set()
+
+    # yeah yeah DRY, idc
+    for _, coords in nodes.items():
+
+        if len(coords) < 2: # there is no pair, skip
+            continue
+
+        for i in range(len(coords)):
+            for j in range(i + 1, len(coords)):
+                node_a = coords[i]
+                node_b = coords[j]
+
+                x_diff, y_diff = get_distance(node_a, node_b)
+
+                for c in range(-max(map_width, map_height), max(map_width, map_height)):
+                    # c starts negative, so the addition here is symbolic
+                    antinode = (node_a[0] + (c * x_diff), node_a[1] + (c * y_diff))
+
+                    if in_bounds(antinode, map_width, map_height):
+                        antinode_rays.add(antinode)
+
+    print('Part 2:', len(antinode_rays))
 
 
 def get_distance(node_a: tuple[int, int], node_b: tuple[int, int]) -> int:

@@ -45,6 +45,8 @@
       antinodes. However, they can obstruct any location
       that does contain an antinode. (These are still counted)
 
+    example.txt contains 14 antinodes.
+
 '''
 
 def main():

@@ -66,6 +66,7 @@ def get_all_possible_expressions(factors: list[int], operators: list[str]) -> li
 
 def main():
 
+    sum_of_valid_targets = 0
     targets = []
     factors = []
 
@@ -90,19 +91,17 @@ def main():
     for i in range(len(targets)):
         exp_list = all_permutations[i] # list of all expressions, matches targets[i]
         target = targets[i]
+
         for exp in exp_list:
-            print('before:', exp)
-            eval_concat_operator(exp)
-            print('after:', exp)
-            print('======================')
-
-
-    # exp = [10, '*', 5, '+', 2]
-    # exp = eval_concat_operator(exp)
-    # result = eval_left_to_right(exp)
-
-    # exp_string = ''.join(str(x) for x in exp)
-    # print(f'{exp_string} = {result}')
+            exp = eval_concat_operator(exp)
+            ans = eval_left_to_right(exp)
+            if ans == target:
+                print('exp:', exp)
+                print('ans:', ans)
+                print(f'ans {ans} == target {target}')
+                print('======================')
+                sum_of_valid_targets += ans
+                break # exit so you don't count targets twice.
 
 
 if __name__ == '__main__':

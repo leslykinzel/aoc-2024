@@ -15,6 +15,11 @@ def eval_left_to_right(expression: list[Any]) -> int:
                 ans += expression[i+1]
             case '*':
                 ans *= expression[i+1]
+            case '||':
+                ans = int(str(ans) + str(expression[i+1]))
+                expression[i+1] = ans
+                expression.pop(i)
+                i-=1
             case _:
                 pass
         i+=1
@@ -43,7 +48,7 @@ def get_all_possible_expressions(factors: list[int], operators: list[str]) -> li
 
 def main():
 
-    part1_sum_of_valid_targets = 0
+    sum_of_valid_targets = 0
     targets = []
     factors = []
 
@@ -57,25 +62,28 @@ def main():
             targets.append(int(target))
             factors.append(list(map(int, factor.split())))
 
-    part1_all_permutations = []
+    # just remove || for part 1
+    operators = ['+', '*', '||']
+    all_permutations = []
+
     for f in factors:
-        part1_all_permutations.append(get_all_possible_expressions(f, ['+', '*']))
+        all_permutations.append(get_all_possible_expressions(f, operators))
 
     for i in range(len(targets)):
-        exp_list = part1_all_permutations[i] # list of all expressions, matches targets[i]
+        exp_list = all_permutations[i] # list of all expressions, matches targets[i]
         target = targets[i]
 
         for exp in exp_list:
             ans = eval_left_to_right(exp)
             if ans == target:
-                print('exp:', exp)
-                print('ans:', ans)
-                print(f'ans {ans} == target {target}')
-                print('======================')
-                part1_sum_of_valid_targets += ans
+                # print('exp:', exp)
+                # print('ans:', ans)
+                # print(f'ans {ans} == target {target}')
+                # print('======================')
+                sum_of_valid_targets += ans
                 break # exit so you don't count targets twice.
 
-    print(part1_sum_of_valid_targets)
+    print('Sum of valid targets:', sum_of_valid_targets)
 
 
 if __name__ == '__main__':

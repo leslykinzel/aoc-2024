@@ -38,28 +38,32 @@ class TestListProcessing(unittest.TestCase):
 
     def test_eval_concat_operator(self):
         '''
-            If the expression contains a || operator, the values
-            around it must be combined. e.g. [ 10, '||', 19, '+', 5 ] -> [ 1019, '+', 5 ]
+            A list containing a mathematical expression must be
+            evaluated left to right ignoring any operator precedence.
         '''
         test_cases = [
-            [10, '||', 19],
-            [9, '+', 7, '+', 18, '||', 13],
-            [11, '||', 6, '||', 16, '||', 20],
-            [17, '*', 5],
-            [9, '||', 7, '||', 18, '+', 13]
+            [10, '*', 19],
+            [81, '+', 40, '*', 27],
+            [156],
+            [178, '+', 14],
+            [11, '+', 6, '*', 16, '+', 20],
+            [6, '*', 8, '||', 6, '*', 15],
+            [17, '||', 8, '+', 14]
         ]
         expected = [
-            [1019],
-            [9, '+', 7, '+', 1813],
-            [1161620],
-            [17, '*', 5],
-            [9718, '+', 13]
+            190,
+            3267,
+            156,
+            192,
+            292,
+            7290,
+            192
         ]
 
         for i in range(len(test_cases)):
             print(f'Expected:{expected[i]}')
-            print(f'Actual: {eval_concat_operator(test_cases[i])}')
-            self.assertEqual(eval_concat_operator(test_cases[i]), expected[i])
+            print(f'Actual: {eval_left_to_right(test_cases[i])}')
+            self.assertEqual(eval_left_to_right(test_cases[i]), expected[i])
 
 
 if __name__ == '__main__':

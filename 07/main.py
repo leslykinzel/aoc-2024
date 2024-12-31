@@ -4,23 +4,45 @@ import itertools
 def concat_ints(x: int, y: int) -> int:
     return int(str(x) + str(y))
 
-def left_to_right_eval(expression: list[Any]) -> int:
+def eval_concat_operator(expression: list[Any]) -> list[Any]:
     ''' 
-        This challenge is so stupid...
+        Combine args between || operators.
     '''
-    result = expression[0]
+    final_expression = []
 
-    for i in range(1, len(expression), 2):
-        opr = expression[i]
-        num = expression[i + 1]
+    i = 0
+    while i < len(expression):
+        if expression[i] == '||':
+            l_val = str(final_expression[-1])
+            r_val = str(expression[i + 1])
+            final_expression[-1] = int(l_val + r_val)
 
-        match opr:
+            i+=1 # skip next
+        else:
+            final_expression.append(expression[i])
+        i+=1
+
+    return final_expression
+
+def eval_left_to_right(expression: list[Any]) -> int:
+    '''
+        Eval list expression left to right.
+    '''
+    expression = expression[:]
+    ans = expression[0]
+
+    i = 0
+    while i < len(expression) - 1:
+        match expression[i]:
             case '+':
-                result += num
+                ans += expression[i+1]
             case '*':
-                result *= num
+                ans *= expression[i+1]
+            case _:
+                pass
+        i+=1
 
-    return result
+    return ans
 
 
 def get_all_possible_expressions(factors: list[int], operators: list[str]) -> list[list[Any]]:
@@ -44,7 +66,6 @@ def get_all_possible_expressions(factors: list[int], operators: list[str]) -> li
 
 def main():
 
-    ans = 0
     targets = []
     factors = []
 
@@ -54,16 +75,34 @@ def main():
 
             target, factor = line.split(':')
 
+            # targets contains duplicates!!!
             targets.append(int(target))
             factors.append(list(map(int, factor.split())))
 
     # targets: list[int]
     # factors: list[list[int]]
-    print(targets)
-    print(factors)
 
-    part_1_ops = [ '+', '*' ]
-    part_2_ops = [ '+', '*', '||' ]
+    all_permutations = []
+    for f in factors:
+        all_permutations.append(get_all_possible_expressions(f, ['+', '*', '||']))
+
+    # print(all_permutations)
+    for i in range(len(targets)):
+        exp_list = all_permutations[i] # list of all expressions, matches targets[i]
+        target = targets[i]
+        for exp in exp_list:
+            print('before:', exp)
+            eval_concat_operator(exp)
+            print('after:', exp)
+            print('======================')
+
+
+    # exp = [10, '*', 5, '+', 2]
+    # exp = eval_concat_operator(exp)
+    # result = eval_left_to_right(exp)
+
+    # exp_string = ''.join(str(x) for x in exp)
+    # print(f'{exp_string} = {result}')
 
 
 if __name__ == '__main__':

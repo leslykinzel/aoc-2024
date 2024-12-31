@@ -1,34 +1,50 @@
+from typing import Any
 import itertools
 
 def concat_ints(x: int, y: int) -> int:
     return int(str(x) + str(y))
 
-def left_to_right_eval(factors: list[int], operators: list[str]) -> int:
+def left_to_right_eval(expression: list[Any]) -> int:
     ''' 
         This challenge is so stupid...
     '''
-    result = factors[0]
+    result = expression[0]
 
-    for i in range(len(operators)):
-        match operators[i]:
+    for i in range(1, len(expression), 2):
+        opr = expression[i]
+        num = expression[i + 1]
+
+        match opr:
             case '+':
-                result += factors[i + 1]
+                result += num
             case '*':
-                result *= factors[i + 1]
+                result *= num
 
     return result
 
 
-def factors_can_make_target(expressions: list) -> bool:
+def get_all_possible_expressions(factors: list[int], operators: list[str]) -> list[list[Any]]:
+    ''' 
+        Returns all possible expressions with a list of 
+        operators for a single list of factors as ints.
     '''
-        If any permutation of operators can equal the target when 
-        evaluated left-to-right (ignoring operator precedence), 
-        return True.
-    '''
-    return False
+    required_operators = len(factors) - 1
+    possible_combos = list(itertools.product(operators, repeat=required_operators))
+
+    # return list of expressions [[ 1, '+', 2, '*', 3 ], [etc], [etc]]
+    possible_expressions = []
+    for combo in possible_combos:
+        # merge each set of operators into list of ints
+        expr = (list(itertools.chain(*itertools.zip_longest(factors, list(combo), fillvalue=None))))
+        expr_rm_none = [ x for x in expr if x is not None ]
+        possible_expressions.append(expr_rm_none)
+
+    return possible_expressions
+
 
 def main():
 
+    ans = 0
     targets = []
     factors = []
 
@@ -41,15 +57,13 @@ def main():
             targets.append(int(target))
             factors.append(list(map(int, factor.split())))
 
-    sum_of_valid_targets = 0
-    test_ops = [ '*', '+', '*' ]
-    test_num = [ 1, 2, 3, 4]
+    # targets: list[int]
+    # factors: list[list[int]]
+    print(targets)
+    print(factors)
 
-    merged = [item for pair in itertools.zip_longest(test_num, test_ops, fillvalue=None) for item in pair]
-    merged.remove(None)
-    print(merged)
-
-    print('ANS:', sum_of_valid_targets)
+    part_1_ops = [ '+', '*' ]
+    part_2_ops = [ '+', '*', '||' ]
 
 
 if __name__ == '__main__':

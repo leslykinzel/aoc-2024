@@ -1,22 +1,25 @@
 import unittest
-from main import concat_ints, left_to_right_eval
+from main import *
 
 class TestListProcessing(unittest.TestCase):
 
-    def test_concat_ints(self):
-        self.assertEqual(concat_ints(123, 456), 123456)
+    def __init__(self):
+        self.operators = [ '+', '*', '||' ]
+        self.targets = [190, 3267, 83, 156, 7290, 161011, 192, 21037, 292]
+        self.factors = [
+            [10, 19],
+            [81, 40, 27],
+            [17, 5],
+            [15, 6],
+            [6, 8, 6, 15],
+            [16, 10, 13],
+            [17, 8, 14],
+            [9, 7, 18, 13],
+            [11, 6, 16, 20]
+        ]
 
-    def test_list_ops(self):
-        self.assertEqual(left_to_right_eval([10, 19], ['*']), 190)
-
-    def test_list_eval_1(self):
-        self.assertEqual(left_to_right_eval([10, 19], ['+']), 29)
-
-    def test_list_eval_2(self):
-        self.assertEqual(left_to_right_eval([10, 19], ['||']), 1019)
-
-    def test_list_eval_3(self):
-        self.assertEqual(left_to_right_eval([81, 40, 27], ['*', '||']), (81 * 4027))
+    def test_get_all_possible_expressions(self):
+        self.assertEqual()
 
 if __name__ == '__main__':
     unittest.main()

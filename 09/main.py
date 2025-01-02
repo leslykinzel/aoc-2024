@@ -1,16 +1,19 @@
+import re
 
 def main():
     with open('example.txt', 'r') as file:
         for line in file:
             raw = line.strip()
 
-    print('Raw input:', raw)
+    # print('Raw input:', raw)
 
     decoded = decode_diskmap(raw)
     print('Decoded:', decoded)
 
-    encoded = encode_diskmap(decoded)
-    print('Encoded:', encoded)
+    # encoded = encode_diskmap(decoded)
+    # print('Encoded:', encoded)
+    defrag = defrag_diskmap(decoded)
+    print('Defrag:', defrag)
 
 
 def decode_diskmap(raw: str) -> str:
@@ -56,6 +59,25 @@ def encode_diskmap(map_string: str) -> str:
         result += str(len(stack))
 
     return result
+
+def defrag_diskmap(diskmap: str) -> str:
+    '''
+        Integers swap positions with periods from right to left.
+    '''
+    charlist = list(diskmap)
+
+    for i in range(len(charlist)-1, 0, -1):
+        # print(''.join(charlist)) # [debug] view iteration
+        if re.search(r'(?<=\.)\d', ''.join(charlist)):
+            if charlist[i].isnumeric():
+                for j in range(len(charlist)):
+                    if charlist[j] == '.':
+                        charlist[j], charlist[i] = charlist[i], charlist[j]
+                        break
+        else:
+            break
+
+    return ''.join(charlist)
 
 if __name__ == '__main__':
     main()

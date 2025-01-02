@@ -12,11 +12,16 @@ def main():
     encoded = encode_diskmap(decoded)
     print('Encoded:', encoded)
 
-    if encoded == raw:
-        print('success')
-
 
 def decode_diskmap(raw: str) -> str:
+    '''
+        Decodes sequence of integer pairs into:
+
+        - int 1 = n * i++
+        - int 2 = n * '.'
+
+        e.g. 2333 -> 00...111...
+    '''
     result = ''
     id = 0
 
@@ -34,6 +39,10 @@ def decode_diskmap(raw: str) -> str:
     return result
 
 def encode_diskmap(map_string: str) -> str:
+    '''
+        RLE encoding that expects pairs of values,
+        reversing the process in decode_diskmap.
+    '''
     result = ''
     stack = []
 

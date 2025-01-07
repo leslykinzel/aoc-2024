@@ -12,8 +12,8 @@ def main():
     # encoded = encode_diskmap(decoded)
     # print('Encoded:', encoded)
 
-    # defrag = defrag_diskmap(decoded)
-    # print('Defrag:', defrag)
+    defrag = defrag_diskmap(decoded)
+    print('Defrag:', defrag)
 
     # checksum = calculate_checksum(defrag)
     # print('Checksum:', checksum)
@@ -37,24 +37,22 @@ def decode_diskmap(raw: list) -> list:
 
     return disk
 
-def defrag_diskmap(diskmap: str) -> str:
+def defrag_diskmap(disk: list) -> list:
     '''
         Integers swap positions with periods from right to left.
     '''
-    charlist = list(diskmap)
+    empty_indexes = [idx for idx, val in enumerate(disk) if val == -1]
+    i = 0
 
-    for i in range(len(charlist)-1, 0, -1):
-        # print(''.join(charlist)) # [debug] view iteration
-        if re.search(r'(?<=\.)\d', ''.join(charlist)):
-            if charlist[i].isnumeric():
-                for j in range(len(charlist)):
-                    if charlist[j] == '.':
-                        charlist[j], charlist[i] = charlist[i], charlist[j]
-                        break
-        else:
+    while True:
+        while disk[-1] == -1: disk.pop()
+        target = empty_indexes[i]
+        if target >= len(disk):
             break
+        disk[target] = disk.pop()
+        i += 1
 
-    return ''.join(charlist)
+    return disk
 
 def calculate_checksum(diskmap: str) -> int:
     '''

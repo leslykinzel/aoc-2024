@@ -1,5 +1,6 @@
 import re
 
+
 def main():
     with open('example.txt', 'r') as file:
         raw = list(map(int, file.read().strip()))
@@ -37,6 +38,7 @@ def decode_diskmap(raw: list) -> list:
 
     return disk
 
+
 def defrag_diskmap(disk: list) -> list:
     '''
         Integers swap positions with periods from right to left.
@@ -54,11 +56,13 @@ def defrag_diskmap(disk: list) -> list:
 
     return disk
 
+
 def calculate_checksum(disk: list) -> int:
     '''
         Return sum of int[i] * i.
     '''
     return sum(i * val for i, val in enumerate(disk))
+
 
 if __name__ == '__main__':
     main()

@@ -2,8 +2,7 @@ import re
 
 def main():
     with open('example.txt', 'r') as file:
-        for line in file:
-            raw = line.strip()
+        raw = list(map(int, file.read().strip()))
 
     # print('Raw input:', raw)
 
@@ -13,37 +12,30 @@ def main():
     # encoded = encode_diskmap(decoded)
     # print('Encoded:', encoded)
 
-    defrag = defrag_diskmap(decoded)
-    print('Defrag:', defrag)
+    # defrag = defrag_diskmap(decoded)
+    # print('Defrag:', defrag)
 
-    checksum = calculate_checksum(defrag)
-    print('Checksum:', checksum)
+    # checksum = calculate_checksum(defrag)
+    # print('Checksum:', checksum)
 
 
-def decode_diskmap(raw: str) -> str:
+def decode_diskmap(raw: list) -> list:
     '''
-        Decodes sequence of integer pairs into:
+        Decodes list of integer pairs into:
 
         - int 1 = n * i++
         - int 2 = n * '.'
 
         e.g. 2333 -> 00...111...
     '''
-    result = ''
-    id = 0
+    disk = []
 
-    for idx, val in enumerate(raw):
-        if idx % 2 == 0:
-            # file data
-            for _ in range(int(val)):
-                result += str(id)
-            id+=1
-        else:
-            # blank space
-            for _ in range(int(val)):
-                result += '.'
+    for i in range(0, len(raw), 2):
+        disk.extend(raw[i] * [i//2])
+        if i + 1 < len(raw):
+            disk.extend(raw[i+1] * [-1])
 
-    return result
+    return disk
 
 def defrag_diskmap(diskmap: str) -> str:
     '''

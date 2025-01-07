@@ -15,8 +15,8 @@ def main():
     defrag = defrag_diskmap(decoded)
     print('Defrag:', defrag)
 
-    # checksum = calculate_checksum(defrag)
-    # print('Checksum:', checksum)
+    checksum = calculate_checksum(defrag)
+    print('Checksum:', checksum)
 
 
 def decode_diskmap(raw: list) -> list:
@@ -54,17 +54,11 @@ def defrag_diskmap(disk: list) -> list:
 
     return disk
 
-def calculate_checksum(diskmap: str) -> int:
+def calculate_checksum(disk: list) -> int:
     '''
-        Return sum of int[i] * i, ignores non ints.
+        Return sum of int[i] * i.
     '''
-    sum = 0
-
-    for idx, val in enumerate(diskmap):
-        if val.isnumeric():
-            sum += int(val) * idx
-
-    return sum
+    return sum(i * val for i, val in enumerate(disk))
 
 if __name__ == '__main__':
     main()

@@ -12,6 +12,7 @@ def main():
 
     # encoded = encode_diskmap(decoded)
     # print('Encoded:', encoded)
+
     defrag = defrag_diskmap(decoded)
     print('Defrag:', defrag)
 
@@ -41,25 +42,6 @@ def decode_diskmap(raw: str) -> str:
             # blank space
             for _ in range(int(val)):
                 result += '.'
-
-    return result
-
-def encode_diskmap(map_string: str) -> str:
-    '''
-        RLE encoding that expects pairs of values,
-        reversing the process in decode_diskmap.
-    '''
-    result = ''
-    stack = []
-
-    for val in map_string:
-        if stack and stack[-1] != val:
-            result += f'{len(stack)}{'0' if stack[-1].isnumeric() and val.isnumeric() else ''}'
-            stack.clear()
-        stack.append(val)
-
-    if stack:
-        result += str(len(stack))
 
     return result
 

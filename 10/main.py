@@ -1,8 +1,6 @@
-from collections import deque
 
 def main():
 
-    part1 = 0
     part2 = 0
 
     with open('input.txt', 'r') as file:
@@ -13,25 +11,28 @@ def main():
     rows = len(grid)
     cols = len(grid[0])
 
-    for sr in range(rows):
-        for sc in range(cols):
-            if grid[sr][sc] == '0':
-                queue = deque([(0, sr, sc)])
-                seen = set()
-                while queue:
-                    d, r, c = queue.popleft()
-                    if (r, c) in seen:
-                        continue
-                    seen.add((r, c))
-                    if grid[r][c] == '9':
-                        part1 += 1
-                    for dr, dc in [(-1,0), (0,1), (1,0), (0,-1)]:
-                        rr = r+dr
-                        cc = c+dc
-                        if 0<=rr<rows and 0<=cc<cols and int(grid[rr][cc]) == int(grid[r][c])+1:
-                            queue.append((d+1, rr, cc))
+    dp = {}
 
-    print(part1)
+    def ways(r, c):
+        if grid[r][c] == '0':
+            return 1
+        if (r, c) in dp:
+            return dp[(r, c)]
+        ans = 0
+        for dr, dc in [(-1,0), (0,1), (1,0), (0,-1)]:
+            rr = r+dr
+            cc = c+dc
+            if 0<=rr<rows and 0<=cc<cols and int(grid[rr][cc]) == int(grid[r][c])-1:
+                ans += ways(rr, cc)
+        dp[(r, c)] = ans
+        return ans
+
+    for r in range(rows):
+        for c in range(cols):
+            if grid[r][c] == '9':
+                part2 += ways(r, c)
+
+    print(part2)
 
 
 if __name__ == '__main__':

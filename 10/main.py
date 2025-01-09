@@ -1,3 +1,4 @@
+from pprint import pprint
 
 def main():
 
@@ -5,22 +6,24 @@ def main():
     map_height = 0
 
     with open('example.txt', 'r') as file:
-        data = list(line.strip() for line in file)
+        grid = [list(map(int, line.strip())) for line in file.readlines()]
 
-    print(process_map(data))
+    pprint(process_map(grid))
 
 
-def process_map(data: list[str]) -> list[tuple[int, tuple[int, int]]]:
-    '''
-        Processes 2d map into map of nodes: list[list[elevation, (x, y)]]
-    '''
-    node_list = list()
+def process_map(grid: list[list[int]]) -> list[list]:
+    ''' Transforms simple grid into grid of nodes. '''
+    node_grid = list()
 
-    for idx_y, row in enumerate(data):
-        for idx_x, num in enumerate(row):
-            node_list.append(Node(num, idx_x, idx_y))
+    for idx_y, line in enumerate(grid):
+        node_line = list()
+        for idx_x, num in enumerate(line):
+            node_line.append(Node(num, idx_x, idx_y))
 
-    return node_list
+        node_grid.append(node_line)
+
+    return node_grid
+
 
 class Node:
 

@@ -1,6 +1,8 @@
 
 def main():
 
+    # cool recursive solution credit to @jonathanpaulson5053
+
     part2 = 0
 
     with open('input.txt', 'r') as file:

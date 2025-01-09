@@ -1,47 +1,37 @@
-from pprint import pprint
+from collections import deque
 
 def main():
 
-    with open('example.txt', 'r') as file:
-        grid = [list(map(int, line.strip())) for line in file.readlines()]
+    part1 = 0
+    part2 = 0
 
-    node_grid = process_map(grid)
+    with open('input.txt', 'r') as file:
+        data = file.read().strip()
 
-    map_height = len(node_grid)
-    map_width = len(node_grid[0])
+    grid = data.split('\n')
 
-    pprint(node_grid)
+    rows = len(grid)
+    cols = len(grid[0])
 
-    print(node_grid[0][1] == (1, 0))
+    for sr in range(rows):
+        for sc in range(cols):
+            if grid[sr][sc] == '0':
+                queue = deque([(0, sr, sc)])
+                seen = set()
+                while queue:
+                    d, r, c = queue.popleft()
+                    if (r, c) in seen:
+                        continue
+                    seen.add((r, c))
+                    if grid[r][c] == '9':
+                        part1 += 1
+                    for dr, dc in [(-1,0), (0,1), (1,0), (0,-1)]:
+                        rr = r+dr
+                        cc = c+dc
+                        if 0<=rr<rows and 0<=cc<cols and int(grid[rr][cc]) == int(grid[r][c])+1:
+                            queue.append((d+1, rr, cc))
 
-
-def process_map(grid: list[list[int]]) -> list[list]:
-    ''' Transforms simple grid into grid of nodes. '''
-    node_grid = list()
-
-    for idx_y, line in enumerate(grid):
-        node_line = list()
-        for idx_x, num in enumerate(line):
-            node_line.append(Node(num, idx_x, idx_y))
-
-        node_grid.append(node_line)
-
-    return node_grid
-
-
-class Node:
-
-    def __init__(self, elevation: int, x: int, y: int):
-        self.elevation = elevation
-        self.x = x
-        self.y = y
-
-    def __repr__(self) -> str:
-        return f'({self.elevation}, ({self.x}, {self.y}))'
-
-    def __eq__(self, value: tuple) -> bool:
-        ''' compares the x and y coords of the node '''
-        return self.x == value[0] and self.y == value[1]
+    print(part1)
 
 
 if __name__ == '__main__':

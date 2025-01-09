@@ -1,4 +1,3 @@
-from pprint import pprint
 
 def main():
 
@@ -8,7 +7,16 @@ def main():
     with open('example.txt', 'r') as file:
         grid = [list(map(int, line.strip())) for line in file.readlines()]
 
-    pprint(process_map(grid))
+    node_grid = process_map(grid)
+    starting_postitions = list()
+
+    for line in node_grid:
+        for node in line:
+            if node.elevation == 0:
+                starting_postitions.append(node)
+
+    print(starting_postitions)
+
 
 
 def process_map(grid: list[list[int]]) -> list[list]:

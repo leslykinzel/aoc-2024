@@ -12,6 +12,8 @@ def main():
 
     pprint(node_grid)
 
+    print(node_grid[0][1] == (1, 0))
+
 
 def process_map(grid: list[list[int]]) -> list[list]:
     ''' Transforms simple grid into grid of nodes. '''
@@ -39,11 +41,7 @@ class Node:
 
     def __eq__(self, value: tuple) -> bool:
         ''' compares the x and y coords of the node '''
-        try:
-            # expecting a tuple e.g. Node == (x, y)
-            return self.x == value[0] and self.y == value[1]
-        except IndexError:
-            return False
+        return self.x == value[0] and self.y == value[1]
 
 
 if __name__ == '__main__':

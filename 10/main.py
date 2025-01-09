@@ -1,22 +1,16 @@
+from pprint import pprint
 
 def main():
-
-    map_width = 0
-    map_height = 0
 
     with open('example.txt', 'r') as file:
         grid = [list(map(int, line.strip())) for line in file.readlines()]
 
     node_grid = process_map(grid)
-    starting_postitions = list()
 
-    for line in node_grid:
-        for node in line:
-            if node.elevation == 0:
-                starting_postitions.append(node)
+    map_height = len(node_grid)
+    map_width = len(node_grid[0])
 
-    print(starting_postitions)
-
+    pprint(node_grid)
 
 
 def process_map(grid: list[list[int]]) -> list[list]:

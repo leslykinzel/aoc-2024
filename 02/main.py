@@ -9,7 +9,7 @@ def main():
     df = pd.DataFrame(data)
     safe_reports = 0
 
-    for i, r in df.iterrows():
+    for _, r in df.iterrows():
         if ordered_and_unique(r) and spaced_within(r, 3):
             safe_reports += 1
 
@@ -19,7 +19,7 @@ def main():
 
     p2_safe_reports = 0
 
-    for i, r in df.iterrows():
+    for _, r in df.iterrows():
         r_vals = r.tolist()
         for n in range(len(r_vals)):
             r_combo = [val for j, val in enumerate(r_vals) if j != n]

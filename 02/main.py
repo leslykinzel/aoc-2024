@@ -4,7 +4,6 @@ def main():
     with open('input.txt', 'r') as file:
         data = [line.split() for line in file.readlines()]
 
-
     ''' Part 1 - Safe Reports '''
 
     df = pd.DataFrame(data)

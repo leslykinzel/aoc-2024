@@ -4,11 +4,6 @@ def main():
     with open('input.txt', 'r') as file:
         data = [line.split() for line in file.readlines()]
 
-    longest_line = max(len(row) for row in data)
-
-    for i in range(len(data)):
-        while len(data[i]) < longest_line:
-            data[i].append(None)
 
     ''' Part 1 - Safe Reports '''
 
